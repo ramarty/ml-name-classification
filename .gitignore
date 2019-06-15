@@ -1,2 +1,3 @@
 # Dont track progress of these folders
-Data/
+Data/rawdata/
+Data/finaldata/training_target_data/
