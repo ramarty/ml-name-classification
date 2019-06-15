@@ -105,11 +105,11 @@ implement_models <- function(data, DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, TRIM_PRO
   # Implement Models -----------------------------------------------------------
   nb1 <- textmodel_nb(x=dfm_v1[train_test == "train",], y=data[[DEP_VAR]][train_test == "train"])
   svm1 <- textmodel_svm(x=dfm_v1[train_test == "train",], y=data[[DEP_VAR]][train_test == "train"])
-  #nnseq1 <- textmodel_nnseq(x=dfm_v1[train_test == "train",], y=data[[DEP_VAR]][train_test == "train"])
+  nnseq1 <- textmodel_nnseq(x=dfm_v1[train_test == "train",], y=data[[DEP_VAR]][train_test == "train"])
   
   data$predict_nb1 <- predict(nb1, newdata = dfm_v1, type="class")
   data$predict_svm1 <- predict(svm1, newdata = dfm_v1, type="class")
-  #data$predict_nnseq1 <- predict(nnseq1, newdata = dfm_v1, type="class")
+  data$predict_nnseq1 <- predict(nnseq1, newdata = dfm_v1, type="class")
   
   # Accuracy / Results ---------------------------------------------------------
   
@@ -120,8 +120,8 @@ implement_models <- function(data, DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, TRIM_PRO
     calc_accuracy_stats(data$predict_svm1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "svm1_test"),
     calc_accuracy_stats(data$predict_svm1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "svm1_train")
     
-    #nnseq1_outsample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "nnseq1_test"),
-    #nnseq1_insample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nnseq1_train"),
+    nnseq1_outsample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "nnseq1_test"),
+    nnseq1_insample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nnseq1_train"),
   )
   
   df_results$DEP_VAR <- DEP_VAR
