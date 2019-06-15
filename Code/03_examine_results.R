@@ -3,99 +3,83 @@
 # Load Data --------------------------------------------------------------------
 results_all <- read.csv(file.path(final_data_file_path, "results", "results_table.csv"))
 
+# Prep Data for Tables ---------------------------------------------------------
+results_all$CLEAN_NAMES_METHOD <- results_all$CLEAN_NAMES_METHOD %>% as.character
 
-# Examine Results --------------------------------------------------------------
-#### Ethnicity
-# Global Results
-results_ethnicity_all <- results_ethnicity[results_ethnicity$group == "all" & results_ethnicity$SUB_SAMPLE == "Christian,Muslim",] %>% dplyr::select(prop_correct, prop_keep, NGRAMS, CLEAN_NAMES_METHOD, prob_restrict)
-results_ethnicity_christian <- results_ethnicity[results_ethnicity$group == "all" & results_ethnicity$SUB_SAMPLE == "Christian",] %>% dplyr::select(prop_correct, prop_keep, NGRAMS, CLEAN_NAMES_METHOD, prob_restrict)
-results_ethnicity_muslim <- results_ethnicity[results_ethnicity$group == "all" & results_ethnicity$SUB_SAMPLE == "Muslim",] %>% dplyr::select(prop_correct, prop_keep, NGRAMS, CLEAN_NAMES_METHOD, prob_restrict)
+results_all <- results_all[order(results_all$accuracy_svm1_test, decreasing=T),]
 
-results_ethnicity_all_0 <- results_ethnicity_all[results_ethnicity_all$prob_restrict == 0,]
-results_ethnicity_christian_0 <- results_ethnicity_christian[results_ethnicity_christian$prob_restrict == 0,]
-results_ethnicity_muslim_0 <- results_ethnicity_muslim[results_ethnicity_muslim$prob_restrict == 0,]
+float_vars <- names(results_all)[grepl("nb|svm|nnseq", names(results_all))]
 
-results_ethnicity_all_75 <- results_ethnicity_all[results_ethnicity_all$prob_restrict == 0.75,]
-results_ethnicity_christian_75 <- results_ethnicity_christian[results_ethnicity_christian$prob_restrict == .75,]
-results_ethnicity_muslim_75 <- results_ethnicity_muslim[results_ethnicity_muslim$prob_restrict == 0.75,]
-
-# By Group Results with Optimal Global Parameters
-results_ethnicity_bygroup <- results_ethnicity[results_ethnicity$NGRAMS == "2,3,4" & results_ethnicity$CLEAN_NAMES_METHOD == "startend_cap" & results_ethnicity$prob_restrict == 0.75,]
-results_ethnicity_bygroup_christian <- results_ethnicity[results_ethnicity$NGRAMS == "2,3,4" & results_ethnicity$CLEAN_NAMES_METHOD == "start_cap" & results_ethnicity$prob_restrict == 0 & results_ethnicity$SUB_SAMPLE == "Christian",]
-results_ethnicity_bygroup_muslim <- results_ethnicity[results_ethnicity$NGRAMS == "2,3,4" & results_ethnicity$CLEAN_NAMES_METHOD == "start_cap" & results_ethnicity$prob_restrict == 0 & results_ethnicity$SUB_SAMPLE == "Muslim",]
-
-#### Relgion
-# Global Results
-results_religion_all <- results_religion[results_religion$group == "all",] %>% dplyr::select(prop_correct, prop_keep, NGRAMS, CLEAN_NAMES_METHOD, prob_restrict)
-results_religion_all_0 <- results_religion_all[results_religion_all$prob_restrict == 0,]
-
-# Add Results to Data ----------------------------------------------------------
-data <- read.csv(file.path(project_file_path, "data", "training_data_011719.csv"))
-data_target <- read.csv(file.path(project_file_path, "data", "target_data_011719.csv"))
-
-train_test <- sample(nrow(data), x=c("train","test"),prob=c(0.75,0.25),replace=T)
-train_test <- c(train_test, rep("neither", nrow(data_target)))
-
-# Clean Dependent Variable
-data$d10 <- data$d10 %>% iconv("WINDOWS-1252","UTF-8") %>% tolower
-data$name <- data$name %>% iconv("WINDOWS-1252","UTF-8") %>% tolower
-data_target$name <- data_target$name %>% iconv("WINDOWS-1252","UTF-8") %>% tolower
-
-CLEAN_NAMES_METHOD <- "start_cap"
-NGRAMS <- c(2,3,4)
-TRIM_PROP_MIN <- 0.0001
-TRIM_PROP_MAX <- 0.99
-
-if(CLEAN_NAMES_METHOD == "startend_cap"){
-  data$name_clean <- lapply(data$name, capitalize_firstlast_charword) %>% unlist
-  data_target$name_clean <- lapply(data_target$name, capitalize_firstlast_charword) %>% unlist
+for(var in float_vars){
+  results_all[[var]] <- round(results_all[[var]],4)
 }
 
-if(CLEAN_NAMES_METHOD == "start_cap"){
-  data$name_clean <- tools::toTitleCase(data$name)
-  data_target$name_clean <- tools::toTitleCase(data_target$name)
+results_all <- subset(results_all, select=c(accuracy_nb1_test, accuracy_svm1_test,
+                                            mean_herf_diff_nb1_test, mean_herf_diff_svm1_test,
+                                            mean_herf_percentdiff_nb1_test, mean_herf_percentdiff_svm1_test,
+                                            CLEAN_NAMES_METHOD, NGRAMS, TRIM_PROP_MIN, TRIM_PROP_MAX,
+                                            DEP_VAR))
+
+results_d3 <- results_all[results_all$DEP_VAR %in% "d3",]
+results_d10 <- results_all[results_all$DEP_VAR %in% "d10",]
+results_religion <- results_all[results_all$DEP_VAR %in% "religion",]
+
+results_d3$DEP_VAR <- NULL
+results_d10$DEP_VAR <- NULL
+results_religion$DEP_VAR <- NULL
+
+# Limit to first 10 best results (or if less than 10, keep all)
+results_d3 <- results_d3[1:min(10, nrow(results_d3)),]
+results_d10 <- results_d10[1:min(10, nrow(results_d10)),]
+results_religion <- results_religion[1:min(10, nrow(results_religion)),]
+
+# Remove irrelevant variables for relgioon
+herf_vars <- names(results_all)[grepl("herf", names(results_all))]
+for(var in herf_vars){
+  results_religion[[var]] <- NULL
 }
 
-if(CLEAN_NAMES_METHOD == "lower"){
-  data$name_clean <- data$name
-  data_target$name_clean <- data_target$name
+# Ethnicity Tables -------------------------------------------------------------
+for(dep_var in c("d3", "d10")){
+  
+  results_temp <- eval(parse(text=paste0("results_",dep_var)))
+
+  sink(file.path(tables_file_path, paste0(dep_var,"_results.tex")))
+  
+  cat("\\begin{tabular}{cc | cc | cc | cccc} ")
+  cat("\\hline ")
+  cat("\\multicolumn{2}{c |}{Accuracy} & \\multicolumn{2}{c |}{Avg Diff Herf} & \\multicolumn{2}{c}{Avg \\% Diff Herf} & \\multicolumn{4}{c}{Parameters} \\\\ ")
+  cat("NB & SVM &  NB & SVM &  NB & SVM & Case & ngrams & trim min & trim max \\\\ ")
+  cat("\\hline ")
+  
+  for(i in 1:nrow(results_temp)){
+    cat(paste(results_temp[i,], collapse=" & ") %>% paste(" \\\\ "))
+  }
+  
+  cat("\\hline")
+  cat("\\end{tabular}")
+  
+  sink()
+
 }
 
-tokens_v1 <- tokens(x=gsub("\\s", "_", c(data$name_clean, data_target$name_clean)), what="character", ngrams=NGRAMS, conc="")
+# Religion Table ---------------------------------------------------------------
+sink(file.path(tables_file_path, "religion_results.tex"))
 
-dfm_v1 <- dfm(tokens_v1, tolower=F) %>%
-  dfm_trim(min_docfreq=TRIM_PROP_MIN, docfreq_type = "prop")  %>%
-  dfm_trim(max_docfreq=TRIM_PROP_MAX, docfreq_type = "prop") 
+cat("\\begin{tabular}{cc | cccc} ")
+cat("\\hline ")
+cat("\\multicolumn{2}{c |}{Accuracy} & \\multicolumn{4}{c}{Parameters} \\\\ ")
+cat("NB & SVM  & Case & ngrams & trim min & trim max \\\\ ")
+cat("\\hline ")
 
-# Predict d10
-nb_d10_model <- textmodel_nb(x=dfm_v1[train_test == "train",], y=data$d10[train_test == "train"])
-data$d10_predict <- predict(nb_d10_model, newdata = dfm_v1[train_test != "neither",], type="class")
-d10_predict_prob_df <- predict(nb_d10_model, newdata = dfm_v1[train_test != "neither",], type="probability") %>% as.data.frame
-data$d10_predict_prob <- apply(d10_predict_prob_df, 1, max) %>% as.numeric
+for(i in 1:nrow(results_temp)){
+  cat(paste(results_religion[i,], collapse=" & ") %>% paste(" \\\\ "))
+}
 
-# Predict religion
-nb_relgion_model <- textmodel_nb(x=dfm_v1[train_test == "train",], y=data$religion[train_test == "train"])
-data$religion_predict <- predict(nb_relgion_model, newdata = dfm_v1[train_test != "neither",], type="class")
-religion_predict_prob_df <- predict(nb_relgion_model, newdata = dfm_v1[train_test != "neither",], type="probability") %>% as.data.frame
-data$religion_predict_prob <- apply(religion_predict_prob_df, 1, max) %>% as.numeric
+cat("\\hline")
+cat("\\end{tabular}")
 
-# Confirm results are good
-table(as.character(data$religion) == as.character(data$religion_predict)) / nrow(data)
+sink()
+  
 
-data <- subset(data, select=-c(d10_predict_prob, religion_predict_prob))
-write.csv(data, file.path(project_file_path, "data_with_predictions", "training_data_011719_withpredictions.csv"), row.names=F)
-
-# Add Predictions to Target Data -----------------------------------------------
-# Predict d10
-data_target$d10_predict <- predict(nb_d10_model, newdata = dfm_v1[train_test == "neither",], type="class")
-d10_predict_prob_df <- predict(nb_d10_model, newdata = dfm_v1[train_test == "neither",], type="probability") %>% as.data.frame
-data_target$d10_predict_prob <- apply(d10_predict_prob_df, 1, max) %>% as.numeric
-
-# Predict religion
-data_target$religion_predict <- predict(nb_relgion_model, newdata = dfm_v1[train_test == "neither",], type="class")
-religion_predict_prob_df <- predict(nb_relgion_model, newdata = dfm_v1[train_test == "neither",], type="probability") %>% as.data.frame
-data_target$religion_predict_prob <- apply(religion_predict_prob_df, 1, max) %>% as.numeric
-
-data_target <- subset(data_target, select=-c(d10_predict_prob, religion_predict_prob))
-write.csv(data_target, file.path(project_file_path, "data_with_predictions", "target_data_011719_withpredictions.csv"), row.names=F)
 

@@ -3,6 +3,8 @@
 \geometry{letterpaper}                   		
 \usepackage{graphicx}				
 \usepackage{amssymb}
+\usepackage{float}
+\usepackage{adjustbox}
 
 \title{Ethnic Fractionalization Using Names}
 \author{}
@@ -29,6 +31,35 @@
 \item SVM
 \item RNN
 \end{itemize}
+
+\section{Results}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{Religion Results}
+\centering
+%\begin{adjustbox}{width=1\textwidth}
+\input{tables/religion_results.tex}
+%\end{adjustbox}
+\end{table}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D3 Results}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d3_results.tex}
+\end{adjustbox}
+\end{table}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D10 Results}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d10_results.tex}
+\end{adjustbox}
+\end{table}
 
 %\section{}
 %\subsection{}
