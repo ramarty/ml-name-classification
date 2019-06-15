@@ -13,5 +13,7 @@ tables_file_path <- file.path(project_file_path, "Results", "tables")
 # Packages ---------------------------------------------------------------------
 library(dplyr)
 library(quanteda)
+library(quanteda.classifiers)
 library(tm)
+library(caret)
 
