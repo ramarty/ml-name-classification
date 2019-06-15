@@ -11,6 +11,7 @@ figures_file_path <- file.path(project_file_path, "Results", "figures")
 tables_file_path <- file.path(project_file_path, "Results", "tables")
 
 # Packages ---------------------------------------------------------------------
+library(dplyr)
 library(quanteda)
-
+library(tm)
 
