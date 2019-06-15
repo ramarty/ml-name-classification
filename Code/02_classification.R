@@ -104,18 +104,18 @@ implement_models <- function(data, DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, TRIM_PRO
 # Implement Algorithms ---------------------------------------------------------
 results_all <- data.frame(NULL)
 
-for(CLEAN_NAMES_METHOD in c("lower")){
-  for(NGRAMS in c("2,3,4,5,6")){
-    for(SUB_SAMPLE_str in c("All")){
-      for(TRIM_PROP_MIN in c(0.001)){
+for(CLEAN_NAMES_METHOD in c("startend_cap", "start_cap", "lower")){
+  for(NGRAMS in c("2","3","4","5","6","2,3","3,4","2,3,4","2,3,4,5","2,3,4,5,6","3,4,5","3,4,5,6")){
+    for(SUB_SAMPLE_str in c("Christian", "Muslim", "All")){
+      for(TRIM_PROP_MIN in c(0.001, 0.01, 0.02)){
         for(TRIM_PROP_MAX in c(0.9)){
-          for(DEP_VAR in c("d10", "religion")){
+          for(DEP_VAR in c("d1","d3","d5","d7","d10","religion")){
           
             print(paste(DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, SUB_SAMPLE_str, TRIM_PROP_MIN, TRIM_PROP_MAX, sep=", "))
             
             # Configure Samples --------------------------------------------------
-            # Subsets only relevant for ethnicity classification
-            if(DEP_VAR != "religion") SUB_SAMPLE_str <- "All"
+            # If dep var is religion and sub-sample is not all, skip
+            if((DEP_VAR == "religion") & SUB_SAMPLE_str != "All") next
             
             if(SUB_SAMPLE_str == "Christian"){
               SUB_SAMPLE <- SUB_SAMPLE_str
