@@ -4,6 +4,8 @@
 TRAIN_PROP <- 0.75
 HERF_N <- 50
 
+set.seed(42)
+
 # Usefu Functions --------------------------------------------------------------
 capitalize_firstlast_charword <- function(s){
   s <- strsplit(s, " ")[[1]]
@@ -65,6 +67,10 @@ train_test <- ifelse(data$herf_group %in% herf_ids_train_sample, "train", "test"
 train_test_christian <- sample(size=nrow(data[data$religion == "Christian",]), x=c("train", "test"), prob=c(TRAIN_PROP, test=(1-TRAIN_PROP)), replace=T)
 train_test_muslim <- sample(size=nrow(data[data$religion == "Muslim",]), x=c("train", "test"), prob=c(TRAIN_PROP, test=(1-TRAIN_PROP)), replace=T)
 
+#### Export Data with Random Herf Groups 
+write.csv(train_test, file.path(final_data_file_path, "training_target_data", "training_data_011719_clean_herfgroups.csv"), row.names=F)
+saveRDS(train_test, file.path(final_data_file_path, "training_target_data", "training_data_011719_clean_herfgroups.Rds"))
+
 # Function to Implement Algorithm ----------------------------------------------
 # 1. Develop Feature Set
 # 2. Implement Models
@@ -118,10 +124,10 @@ implement_models <- function(data, DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, TRIM_PRO
     calc_accuracy_stats(data$predict_nb1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nb1_train"),
     
     calc_accuracy_stats(data$predict_svm1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "svm1_test"),
-    calc_accuracy_stats(data$predict_svm1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "svm1_train")
+    calc_accuracy_stats(data$predict_svm1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "svm1_train"),
     
     nnseq1_outsample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "nnseq1_test"),
-    nnseq1_insample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nnseq1_train"),
+    nnseq1_insample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nnseq1_train")
   )
   
   df_results$DEP_VAR <- DEP_VAR
@@ -145,12 +151,12 @@ results_all <- data.frame(NULL)
 #        for(TRIM_PROP_MAX in c(0.9)){
 #          for(DEP_VAR in c("d1","d3","d5","d7","d10","religion")){
 
-for(CLEAN_NAMES_METHOD in c("lower")){
-  for(NGRAMS in c("2","3","3,4,5,6")){
+for(CLEAN_NAMES_METHOD in c("lower", "startend_cap")){
+  for(NGRAMS in c("1", "2","3","4","5","6","2,3","3,4","2,3,4","2,3,4,5","2,3,4,5,6","3,4,5","3,4,5,6")){
     for(SUB_SAMPLE_str in c("All")){ # "Christian", "Muslim", TODO: adapat herf_index for subgroups 
-      for(TRIM_PROP_MIN in c(0.001, 0.02)){
+      for(TRIM_PROP_MIN in c(0.001, 0.01, 0.02)){
         for(TRIM_PROP_MAX in c(0.9)){
-          for(DEP_VAR in c("d3","d10","religion")){
+          for(DEP_VAR in c("d1","d3","d5","d7","d10","religion")){
           
             print(paste(DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, SUB_SAMPLE_str, TRIM_PROP_MIN, TRIM_PROP_MAX, sep=", "))
             
@@ -178,10 +184,11 @@ for(CLEAN_NAMES_METHOD in c("lower")){
               data[data$religion %in% SUB_SAMPLE,], 
               DEP_VAR = DEP_VAR, 
               CLEAN_NAMES_METHOD = CLEAN_NAMES_METHOD,
-              NGRAMS = as.numeric(strsplit(NGRAMS,",")[[1]]),
+              NGRAMS = as.numeric(unlist(strsplit(NGRAMS, ","))),
               TRIM_PROP_MIN = TRIM_PROP_MIN,
               TRIM_PROP_MAX = TRIM_PROP_MAX,
               train_test = train_test_use)
+            
             results_i$SUB_SAMPLE <- SUB_SAMPLE_str
             results_i$TRAIN_PROP <- TRAIN_PROP
             
@@ -189,6 +196,11 @@ for(CLEAN_NAMES_METHOD in c("lower")){
           
           }
         }
+        
+        # Export temporary files
+        time <- Sys.time() %>% str_replace_all("-|:| ", "")
+        write.csv(results_all, file.path(final_data_file_path, "results", paste0("results_table_",time,".csv")), row.names=F)
+        
       }
     }
   }
@@ -196,3 +208,5 @@ for(CLEAN_NAMES_METHOD in c("lower")){
 
 # Export -----------------------------------------------------------------------
 write.csv(results_all, file.path(final_data_file_path, "results", "results_table.csv"), row.names=F)
+
+
