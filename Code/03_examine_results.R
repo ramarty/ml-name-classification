@@ -1,55 +1,102 @@
 # Ethnicity and Religion Classification
 
 # Load Data --------------------------------------------------------------------
-results_all <- read.csv(file.path(final_data_file_path, "results", "results_table.csv"))
+#results_all <- read.csv(file.path(final_data_file_path, "results", "results_table.csv"))
+#results_all <- list.files(file.path(final_data_file_path, "results"), full.names=T) %>% lapply(read.csv) %>% bind_rows
+
+files <- list.files(file.path(final_data_file_path, "results"), full.names=T)
+results_all <- read.csv(files[length(files)])
 
 # Prep Data for Tables ---------------------------------------------------------
-results_all$CLEAN_NAMES_METHOD <- results_all$CLEAN_NAMES_METHOD %>% as.character
+results_all$CLEAN_NAMES_METHOD <- results_all$CLEAN_NAMES_METHOD %>% as.character %>% str_replace_all("_", " ")
+results_all$NGRAMS <- results_all$NGRAMS %>% as.character
 
-results_all <- results_all[order(results_all$accuracy_svm1_test, decreasing=T),]
+#### Sort
+max_cor <- results_all[,c("herf_correlation_nb1_test",
+               "herf_correlation_nnseq1_test",
+               "herf_correlation_svm1_test")] %>% apply(1, FUN=max, na.rm=T)
+max_acc <- results_all[,c("accuracy_nb1_test",
+                          "accuracy_nnseq1_test",
+                          "accuracy_svm1_test")] %>% apply(1, FUN=max, na.rm=T)
+sort_value <- max_cor
+sort_value[results_all$DEP_VAR == "religion"] <- max_acc[results_all$DEP_VAR == "religion"]
 
+results_all <- results_all[order(sort_value, decreasing=T),]
+
+#### Prep Variables
 float_vars <- names(results_all)[grepl("nb|svm|nnseq", names(results_all))]
 
 for(var in float_vars){
   results_all[[var]] <- round(results_all[[var]],4)
 }
 
-results_all <- subset(results_all, select=c(accuracy_nb1_test, accuracy_svm1_test,
-                                            mean_herf_diff_nb1_test, mean_herf_diff_svm1_test,
-                                            mean_herf_percentdiff_nb1_test, mean_herf_percentdiff_svm1_test,
+#### Select Variables
+results_all_test <- subset(results_all, select=c(accuracy_nb1_test, accuracy_svm1_test, accuracy_nnseq1_test,
+                                            mean_herf_diff_nb1_test, mean_herf_diff_svm1_test, mean_herf_diff_nnseq1_test,
+                                            herf_correlation_nb1_test, herf_correlation_svm1_test, herf_correlation_nnseq1_test,
                                             CLEAN_NAMES_METHOD, NGRAMS, TRIM_PROP_MIN, TRIM_PROP_MAX,
                                             DEP_VAR))
 
-results_d3 <- results_all[results_all$DEP_VAR %in% "d3",]
-results_d10 <- results_all[results_all$DEP_VAR %in% "d10",]
-results_religion <- results_all[results_all$DEP_VAR %in% "religion",]
-
-results_d3$DEP_VAR <- NULL
-results_d10$DEP_VAR <- NULL
-results_religion$DEP_VAR <- NULL
-
-# Limit to first 10 best results (or if less than 10, keep all)
-results_d3 <- results_d3[1:min(10, nrow(results_d3)),]
-results_d10 <- results_d10[1:min(10, nrow(results_d10)),]
-results_religion <- results_religion[1:min(10, nrow(results_religion)),]
-
-# Remove irrelevant variables for relgioon
-herf_vars <- names(results_all)[grepl("herf", names(results_all))]
-for(var in herf_vars){
-  results_religion[[var]] <- NULL
-}
+results_all_train <- subset(results_all, select=c(accuracy_nb1_train, accuracy_svm1_train, accuracy_nnseq1_train,
+                                                  mean_herf_diff_nb1_train, mean_herf_diff_svm1_train, mean_herf_diff_nnseq1_train,
+                                                  herf_correlation_nb1_train, herf_correlation_svm1_train, herf_correlation_nnseq1_train,
+                                                  CLEAN_NAMES_METHOD, NGRAMS, TRIM_PROP_MIN, TRIM_PROP_MAX,
+                                                  DEP_VAR))
 
 # Ethnicity Tables -------------------------------------------------------------
-for(dep_var in c("d3", "d10")){
+for(traintest in c("train", "test")){
+  for(dep_var in c("d1", "d3", "d5","d7", "d10")){
+    
+    #### Prep Dataset
+    results_temp <- eval(parse(text=paste0("results_all_", traintest)))
+    results_temp <- results_temp[results_temp$DEP_VAR %in% dep_var,]
+    results_temp$DEP_VAR <- NULL
+    results_temp <- results_temp[1:min(10, nrow(results_temp)),]
+    
+    #### Make Table
+    sink(file.path(tables_file_path, paste0(dep_var,"_results_",traintest,".tex")))
+    
+    cat("\\begin{tabular}{ccc | ccc | ccc | cccc} ")
+    cat("\\hline ")
+    cat("\\multicolumn{3}{c |}{Accuracy} & \\multicolumn{3}{c |}{Avg Diff Herf} & \\multicolumn{3}{c |}{Cor. True vs Pred Herf} & \\multicolumn{4}{c}{Parameters} \\\\ ")
+    cat("NB & SVM & NN &  NB & SVM & NN &  NB & SVM & NN & Case & ngrams & trim min & trim max \\\\ ")
+    cat("\\hline ")
+    
+    for(i in 1:nrow(results_temp)){
+      cat(paste(results_temp[i,], collapse=" & ") %>% paste(" \\\\ "))
+    }
+    
+    cat("\\hline")
+    cat("\\end{tabular}")
+    
+    sink()
   
-  results_temp <- eval(parse(text=paste0("results_",dep_var)))
+  }
+}
 
-  sink(file.path(tables_file_path, paste0(dep_var,"_results.tex")))
+# Religion Table ---------------------------------------------------------------
+for(traintest in c("train", "test")){
   
-  cat("\\begin{tabular}{cc | cc | cc | cccc} ")
+  #### Prep Dataset
+  results_temp <- eval(parse(text=paste0("results_all_", traintest)))
+  results_temp <- results_temp[results_temp$DEP_VAR %in% "religion",]
+  results_temp <- results_temp[1:min(10, nrow(results_temp)),]
+  
+  # Remove irrelevant variables for relgioon
+  results_temp$DEP_VAR <- NULL
+  
+  herf_vars <- names(results_temp)[grepl("herf", names(results_temp))]
+  for(var in herf_vars){
+    results_temp[[var]] <- NULL
+  }
+  
+  #### Make Table
+  sink(file.path(tables_file_path, paste0("religion_results_",traintest,".tex")))
+  
+  cat("\\begin{tabular}{ccc | cccc} ")
   cat("\\hline ")
-  cat("\\multicolumn{2}{c |}{Accuracy} & \\multicolumn{2}{c |}{Avg Diff Herf} & \\multicolumn{2}{c}{Avg \\% Diff Herf} & \\multicolumn{4}{c}{Parameters} \\\\ ")
-  cat("NB & SVM &  NB & SVM &  NB & SVM & Case & ngrams & trim min & trim max \\\\ ")
+  cat("\\multicolumn{3}{c |}{Accuracy} & \\multicolumn{4}{c}{Parameters} \\\\ ")
+  cat("NB & SVM & NN  & Case & ngrams & trim min & trim max \\\\ ")
   cat("\\hline ")
   
   for(i in 1:nrow(results_temp)){
@@ -60,26 +107,7 @@ for(dep_var in c("d3", "d10")){
   cat("\\end{tabular}")
   
   sink()
-
 }
-
-# Religion Table ---------------------------------------------------------------
-sink(file.path(tables_file_path, "religion_results.tex"))
-
-cat("\\begin{tabular}{cc | cccc} ")
-cat("\\hline ")
-cat("\\multicolumn{2}{c |}{Accuracy} & \\multicolumn{4}{c}{Parameters} \\\\ ")
-cat("NB & SVM  & Case & ngrams & trim min & trim max \\\\ ")
-cat("\\hline ")
-
-for(i in 1:nrow(results_temp)){
-  cat(paste(results_religion[i,], collapse=" & ") %>% paste(" \\\\ "))
-}
-
-cat("\\hline")
-cat("\\end{tabular}")
-
-sink()
   
 
 

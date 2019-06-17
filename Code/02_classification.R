@@ -37,10 +37,13 @@ calc_accuracy_stats <- function(predicted, truth, herf_group, name){
   
   mean_herf_diff <- abs(herf_true - herf_predicted) %>% mean
   mean_herf_percentdiff <- mean(abs(herf_predicted) - abs(herf_true) / abs(herf_true))
+  herf_correlation <- cor(herf_true, herf_predicted)
+  if(is.na(herf_correlation)) herf_correlation <- 0
   
   df_out <- data.frame(accuracy = accuracy,
                        mean_herf_diff = mean_herf_diff,
-                       mean_herf_percentdiff = mean_herf_percentdiff)
+                       mean_herf_percentdiff = mean_herf_percentdiff,
+                       herf_correlation = herf_correlation)
   
   names(df_out) <- paste0(names(df_out), "_", name)
 
@@ -68,8 +71,8 @@ train_test_christian <- sample(size=nrow(data[data$religion == "Christian",]), x
 train_test_muslim <- sample(size=nrow(data[data$religion == "Muslim",]), x=c("train", "test"), prob=c(TRAIN_PROP, test=(1-TRAIN_PROP)), replace=T)
 
 #### Export Data with Random Herf Groups 
-write.csv(train_test, file.path(final_data_file_path, "training_target_data", "training_data_011719_clean_herfgroups.csv"), row.names=F)
-saveRDS(train_test, file.path(final_data_file_path, "training_target_data", "training_data_011719_clean_herfgroups.Rds"))
+write.csv(data, file.path(final_data_file_path, "training_target_data", "training_data_011719_clean_herfgroups.csv"), row.names=F)
+saveRDS(data, file.path(final_data_file_path, "training_target_data", "training_data_011719_clean_herfgroups.Rds"))
 
 # Function to Implement Algorithm ----------------------------------------------
 # 1. Develop Feature Set
@@ -118,7 +121,6 @@ implement_models <- function(data, DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, TRIM_PRO
   data$predict_nnseq1 <- predict(nnseq1, newdata = dfm_v1, type="class")
   
   # Accuracy / Results ---------------------------------------------------------
-  
   df_results <- cbind(
     calc_accuracy_stats(data$predict_nb1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "nb1_test"),
     calc_accuracy_stats(data$predict_nb1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nb1_train"),
@@ -126,8 +128,8 @@ implement_models <- function(data, DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, TRIM_PRO
     calc_accuracy_stats(data$predict_svm1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "svm1_test"),
     calc_accuracy_stats(data$predict_svm1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "svm1_train"),
     
-    nnseq1_outsample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "nnseq1_test"),
-    nnseq1_insample_accuracy = calc_accuracy_stats(data$predict_nnseq1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nnseq1_train")
+    calc_accuracy_stats(data$predict_nnseq1[train_test == "test"], data[[DEP_VAR]][train_test == "test"], data$herf_group[train_test == "test"], "nnseq1_test"),
+    calc_accuracy_stats(data$predict_nnseq1[train_test == "train"], data[[DEP_VAR]][train_test == "train"], data$herf_group[train_test == "train"], "nnseq1_train")
   )
   
   df_results$DEP_VAR <- DEP_VAR

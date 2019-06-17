@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  15 JUN 2019 17:06
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  17 JUN 2019 08:58
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -277,28 +277,43 @@ File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 24.
+ [1
 
-(./tables/religion_results.tex) (./tables/d3_results.tex) [1
+{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+<Figures/herfindalh_truth_index.png, id=12, 1806.75pt x 1505.625pt>
+File: Figures/herfindalh_truth_index.png Graphic file (type png)
 
-{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./tabl
-es/d10_results.tex) [2] (./writeup.aux) ) 
+<use Figures/herfindalh_truth_index.png>
+Package pdftex.def Info: Figures/herfindalh_truth_index.png used on input line 
+52.
+(pdftex.def)             Requested size: 301.00192pt x 250.82967pt.
+ [2 <./Figures/herfindalh_truth_index.png>] (./tables/religion_results_test.tex
+) (./tables/religion_results_train.tex) [3] (./tables/d1_results_test.tex) (./t
+ables/d1_results_train.tex) [4]
+(./tables/d3_results_test.tex) (./tables/d3_results_train.tex) [5]
+(./tables/d5_results_test.tex) (./tables/d5_results_train.tex) [6]
+(./tables/d7_results_test.tex) (./tables/d7_results_train.tex) [7]
+(./tables/d10_results_test.tex) (./tables/d10_results_train.tex) [8]
+(./writeup.aux) ) 
 Here is how much of TeX's memory you used:
- 3083 strings out of 492995
- 45177 string characters out of 6132704
- 122012 words of memory out of 5000000
- 6566 multiletter control sequences out of 15000+600000
- 10737 words of font info for 41 fonts, out of 8000000 for 9000
+ 3124 strings out of 492995
+ 46162 string characters out of 6132704
+ 134020 words of memory out of 5000000
+ 6576 multiletter control sequences out of 15000+600000
+ 11352 words of font info for 43 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 39i,8n,37p,840b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2017/texmf-dist/fo
-nts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmsy10.pfb>
-Output written on writeup.pdf (2 pages, 52199 bytes).
+ 39i,8n,37p,1512b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfont
+s/cm/cmbx10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmmi10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy10.pfb>
+Output written on writeup.pdf (8 pages, 146146 bytes).
 PDF statistics:
- 27 PDF objects out of 1000 (max. 8388607)
- 18 compressed objects within 1 object stream
+ 58 PDF objects out of 1000 (max. 8388607)
+ 39 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

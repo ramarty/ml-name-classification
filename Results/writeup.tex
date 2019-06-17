@@ -27,41 +27,174 @@
 
 \noindent Algorithms
 \begin{itemize}
-\item Naive Bayes
-\item SVM
-\item RNN
+\item NB (Naive Bayes)
+\item SVM (Support Vector Machine)
+\item NN (Neural Network)
 \end{itemize}
 
+\noindent Parameters
+\begin{itemize}
+\item {\bf Word Case:} Either (1) make all letters lower case, (2) make start and end of words upper case, which adds additional information to the algorithm -- instead of just letters, the algorithm will also know whether group of letters are from beginning, middle or end of name.
+\item {\bf ngrams:} N-grams to make out of letters. (For example, with the word ``word'', using an n-gram of 2 would give us: wo, or, rd.).
+\item {\bf trim min:} If an n-gram appears in less than $trim~min$ proportion of names, we exclude it. (ie, remove super rare n-grams).
+\item {\bf trim max:} If an n-gram appears in more than $trim~max$ proportion of names, we exclude it. (ie, remove super common n-grams).
+\end{itemize}
+
+\noindent Accuracy
+\begin{itemize}
+\item Assess accuracy of predictions as well as accuracy of the predicted Herfindalh index. We randomly assign each observation into groups of size 50. For each group, we compute the actual and predicted Herfindalh Index. Figure \ref{herf_index_dist} shows the distribution of the Herfindalh index across groups using the d10 variable.
+\end{itemize}
+
+\begin{figure}[H]
+  \caption{Distribution of Herfindahl index of true d10 groups across randomly assigned groups}
+  \label{herf_index_dist}
+  \centering
+    \includegraphics[width=0.7\textwidth]{Figures/herfindalh_truth_index.png}
+\end{figure}
+
+\newpage
 \section{Results}
+
+Reporting results of both out of sample and in sample tests. Large differences between in sample and out of sample results suggests that the algorithm is overfitting.
+\par
+For the Herfindahl index, we compute the average absolute difference between the predicted and actual index, and the correlation between the actual and predicted index.
+
+% --------------------------------
+\subsection{Religion}
 
 \setlength{\tabcolsep}{10pt}
 \begin{table}[H]
-\caption{Religion Results}
+\caption{Religion Results: Test Set (Out of Sample)}
 \centering
 %\begin{adjustbox}{width=1\textwidth}
-\input{tables/religion_results.tex}
+\input{tables/religion_results_test.tex}
 %\end{adjustbox}
 \end{table}
 
 \setlength{\tabcolsep}{10pt}
 \begin{table}[H]
-\caption{D3 Results}
+\caption{Religion Results: Train Set (In Sample)}
+\centering
+%\begin{adjustbox}{width=1\textwidth}
+\input{tables/religion_results_train.tex}
+%\end{adjustbox}
+\end{table}
+
+% -------------------------------------------------
+\newpage
+\subsection{D1}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D1 Results: Test Set (Out of Sample)}
 \centering
 \begin{adjustbox}{width=1\textwidth}
-\input{tables/d3_results.tex}
+\input{tables/d1_results_test.tex}
 \end{adjustbox}
 \end{table}
 
 \setlength{\tabcolsep}{10pt}
 \begin{table}[H]
-\caption{D10 Results}
+\caption{D1 Results: Train Set (In Sample)}
 \centering
 \begin{adjustbox}{width=1\textwidth}
-\input{tables/d10_results.tex}
+\input{tables/d1_results_train.tex}
+\end{adjustbox}
+\end{table}
+
+% -------------------------------------------------
+\newpage
+\subsection{D3}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D3 Results: Test Set (Out of Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d3_results_test.tex}
+\end{adjustbox}
+\end{table}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D3 Results: Train Set (In Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d3_results_train.tex}
+\end{adjustbox}
+\end{table}
+
+% -------------------------------------------------
+\newpage
+\subsection{D5}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D5 Results: Test Set (Out of Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d5_results_test.tex}
+\end{adjustbox}
+\end{table}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D5 Results: Train Set (In Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d5_results_train.tex}
+\end{adjustbox}
+\end{table}
+
+% -------------------------------------------------
+\newpage
+\subsection{D7}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D7 Results: Test Set (Out of Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d7_results_test.tex}
+\end{adjustbox}
+\end{table}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D7 Results: Train Set (In Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d7_results_train.tex}
+\end{adjustbox}
+\end{table}
+
+% -------------------------------------------------
+\newpage
+\subsection{D10}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D10 Results: Test Set (Out of Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d10_results_test.tex}
+\end{adjustbox}
+\end{table}
+
+\setlength{\tabcolsep}{10pt}
+\begin{table}[H]
+\caption{D10 Results: Train Set (In Sample)}
+\centering
+\begin{adjustbox}{width=1\textwidth}
+\input{tables/d10_results_train.tex}
 \end{adjustbox}
 \end{table}
 
 %\section{}
 %\subsection{}
 
-\end{document}  
+\end{document} 
+
+
+
+ 
