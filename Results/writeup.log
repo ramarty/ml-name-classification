@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  17 JUN 2019 09:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex 2017.5.23)  18 JUN 2019 08:46
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -294,26 +294,27 @@ ables/d1_results_train.tex) [4]
 (./tables/d5_results_test.tex) (./tables/d5_results_train.tex) [6]
 (./tables/d7_results_test.tex) (./tables/d7_results_train.tex) [7]
 (./tables/d10_results_test.tex) (./tables/d10_results_train.tex) [8]
-(./writeup.aux) ) 
+(./tables/sr_ethnicity_results_test.tex)
+(./tables/sr_ethnicity_results_train.tex) [9] (./writeup.aux) ) 
 Here is how much of TeX's memory you used:
- 3124 strings out of 492995
- 46162 string characters out of 6132704
+ 3130 strings out of 492995
+ 46363 string characters out of 6132704
  133020 words of memory out of 5000000
  6576 multiletter control sequences out of 15000+600000
  11352 words of font info for 43 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 39i,8n,37p,1512b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmbx10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmbx12.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmmi10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmr10.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmr17.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-sy10.pfb>
-Output written on writeup.pdf (8 pages, 145396 bytes).
+ 39i,8n,37p,1552b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texl
+ive/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/local/texli
+ve/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/local/texliv
+e/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive
+/2017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local/texlive/2
+017/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/texlive/201
+7/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on writeup.pdf (9 pages, 148175 bytes).
 PDF statistics:
- 58 PDF objects out of 1000 (max. 8388607)
- 39 compressed objects within 1 object stream
+ 61 PDF objects out of 1000 (max. 8388607)
+ 41 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 

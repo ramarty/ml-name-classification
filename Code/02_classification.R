@@ -158,7 +158,7 @@ for(CLEAN_NAMES_METHOD in c("lower", "startend_cap")){
     for(SUB_SAMPLE_str in c("All")){ # "Christian", "Muslim", TODO: adapat herf_index for subgroups 
       for(TRIM_PROP_MIN in c(0.001, 0.01, 0.02)){
         for(TRIM_PROP_MAX in c(0.9)){
-          for(DEP_VAR in c("d1","d3","d5","d7","d10","religion")){
+          for(DEP_VAR in c("sr_ethnicity")){ # "d1","d3","d5","d7","d10","religion"
           
             print(paste(DEP_VAR, CLEAN_NAMES_METHOD, NGRAMS, SUB_SAMPLE_str, TRIM_PROP_MIN, TRIM_PROP_MAX, sep=", "))
             
@@ -209,6 +209,6 @@ for(CLEAN_NAMES_METHOD in c("lower", "startend_cap")){
 }
 
 # Export -----------------------------------------------------------------------
-write.csv(results_all, file.path(final_data_file_path, "results", "results_table.csv"), row.names=F)
+#write.csv(results_all, file.path(final_data_file_path, "results", "results_table.csv"), row.names=F)
 
 

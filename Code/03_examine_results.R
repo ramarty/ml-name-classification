@@ -3,9 +3,10 @@
 # Load Data --------------------------------------------------------------------
 #results_all <- read.csv(file.path(final_data_file_path, "results", "results_table.csv"))
 #results_all <- list.files(file.path(final_data_file_path, "results"), full.names=T) %>% lapply(read.csv) %>% bind_rows
+#files <- list.files(file.path(final_data_file_path, "results"), full.names=T)
+#results_all <- read.csv(files[length(files)])
 
-files <- list.files(file.path(final_data_file_path, "results"), full.names=T)
-results_all <- read.csv(files[length(files)])
+results_all <- list.files(file.path(final_data_file_path, "results"), full.names=T) %>% lapply(read.csv) %>% bind_rows
 
 # Prep Data for Tables ---------------------------------------------------------
 results_all$CLEAN_NAMES_METHOD <- results_all$CLEAN_NAMES_METHOD %>% as.character %>% str_replace_all("_", " ")
@@ -45,7 +46,7 @@ results_all_train <- subset(results_all, select=c(accuracy_nb1_train, accuracy_s
 
 # Ethnicity Tables -------------------------------------------------------------
 for(traintest in c("train", "test")){
-  for(dep_var in c("d1", "d3", "d5","d7", "d10")){
+  for(dep_var in c("d1", "d3", "d5","d7", "d10", "sr_ethnicity")){
     
     #### Prep Dataset
     results_temp <- eval(parse(text=paste0("results_all_", traintest)))
