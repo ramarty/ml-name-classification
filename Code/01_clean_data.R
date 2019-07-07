@@ -19,7 +19,7 @@ data_target$kata <- data_target$kata %>% as.character %>% iconv("WINDOWS-1252","
 
 # Load and Prep Ethnicity Table ------------------------------------------------
 eth_table <- read.csv(file.path(raw_data_file_path, "ethtable.csv")) %>% 
-  select(c(-F,-Real.Name)) %>%
+  dplyr::select(c(-F,-Real.Name)) %>%
   dplyr::rename(sr_ethnicity = Survey.Name)
 names(eth_table) <- names(eth_table) %>% tolower
 

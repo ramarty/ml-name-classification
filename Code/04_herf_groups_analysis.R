@@ -7,7 +7,7 @@ data <- readRDS(file.path(final_data_file_path, "training_target_data", "trainin
 
 # Herf Index -------------------------------------------------------------------
 herf_index_df <- lapply(unique(data$herf_group), function(i){
-  herf_index <- Herfindahl(as.numeric(as.factor(data$d10[data$herf_group == i])))
+  herf_index <- Herfindahl(as.numeric(table(as.numeric(as.factor(data$d10[data$herf_group == i])))))
   N <- length(data$d10[data$herf_group == i])
   
   df_out <- data.frame(id = i,

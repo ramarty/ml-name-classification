@@ -6,7 +6,7 @@ HERF_N <- 50
 
 set.seed(42)
 
-# Usefu Functions --------------------------------------------------------------
+# Useful Functions -------------------------------------------------------------
 capitalize_firstlast_charword <- function(s){
   s <- strsplit(s, " ")[[1]]
   s_new <- paste(toupper(substring(s, 1,1)), substring(s, 2, nchar(s)-1), toupper(substring(s, nchar(s), nchar(s))),
@@ -19,9 +19,10 @@ second_highest_number <- function(x){
   return(x_2nd_highest)
 }
 
-predicted <- data$predict_nb1[train_test == "test"]
-truth <- data[[DEP_VAR]][train_test == "test"]
-herf_group <- data$herf_group[train_test == "test"]
+# DEP_VAR = "d10"
+#predicted <- data$predict_nb1[train_test == "test"]
+#truth <- data[[DEP_VAR]][train_test == "test"]
+#herf_group <- data$herf_group[train_test == "test"]
 
 calc_accuracy_stats <- function(predicted, truth, herf_group, name){
   
@@ -32,8 +33,8 @@ calc_accuracy_stats <- function(predicted, truth, herf_group, name){
   accuracy <- mean(predicted == truth)
   
   ## Herf
-  herf_true <- lapply(unique(herf_group), function(group_i) Herfindahl(as.numeric(as.factor(truth))[herf_group == group_i])) %>% unlist
-  herf_predicted <- lapply(unique(herf_group), function(group_i) Herfindahl(as.numeric(as.factor(predicted))[herf_group == group_i])) %>% unlist
+  herf_true <- lapply(unique(herf_group), function(group_i) Herfindahl(as.numeric(table(as.numeric(as.factor(truth))[herf_group == group_i])) )) %>% unlist
+  herf_predicted <- lapply(unique(herf_group), function(group_i) Herfindahl(as.numeric(table(as.numeric(as.factor(predicted))[herf_group == group_i])) )) %>% unlist
   
   mean_herf_diff <- abs(herf_true - herf_predicted) %>% mean
   mean_herf_percentdiff <- mean(abs(herf_predicted) - abs(herf_true) / abs(herf_true))
